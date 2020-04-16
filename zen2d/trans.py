@@ -11,11 +11,19 @@ class transformation:
 	def __call__(self, obj):
 		return self.transform(obj)
 
+	def __mul__(self, oth):
+		ang = self.ang + oth.ang
+		lin = self.lin + self(oth.lin)
+
+		return transformation(ang, lin)
+
 def rotate(ang):
 	return transformation(ang, (0,0))
 
-def translate(lin):
-	return transformation(ang, lin)
+def translate(x, y=None):
+	if y is None:
+		x, y = x
+	return transformation(0, (x,y))
 
 def nulltrans():
 	return transformation(0, (0,0))

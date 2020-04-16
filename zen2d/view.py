@@ -26,6 +26,8 @@ class view(QWidget):
 		self.scn = scn
 		self.center = point(0,0)
 		self.scale = 1
+
+		self.zoom_koeff_mouse = 1.1
 		
 	def set_scene(self, scn):
 		self.scn = scn
@@ -37,3 +39,52 @@ class view(QWidget):
 
 	def paintEvent(self, ev):
 		self.redraw()
+
+
+	def onMouseWheel(self, theFlags, theDelta, thePoint):
+		if theDelta.y() > 0:
+			self.scale *= self.zoom_koeff_mouse
+		else:
+			self.scale /= self.zoom_koeff_mouse
+
+	def onMouseMove(self, theFlags, thePoint):
+		diff = self.temporary1 - thePoint
+
+		if theFlags & Qt.LeftButton or self.alt_pressed:
+			self.center = self.center + vector(diff.x(), -diff.y()) / self.scale
+
+		self.temporary1 = thePoint
+
+	def wheelEvent(self, e):
+		self.onMouseWheel(e.buttons(), e.angleDelta(), e.pos())
+		self.update()
+
+	def mouseMoveEvent(self, e):
+		self.onMouseMove(e.buttons(), e.pos())
+		self.update()
+
+
+
+	def onLButtonDown(self, theFlags, thePoint):
+		self.temporary1 = thePoint
+
+	def onRButtonDown(self, theFlags, thePoint):
+		self.temporary1 = thePoint
+
+	def onMButtonDown(self, theFlags, thePoint):
+		self.temporary1 = thePoint
+
+
+	def mouseReleaseEvent(self, e):
+		self.mousedown = False
+
+	def mousePressEvent(self, e):
+		self.mousedown = True
+		if e.button() == Qt.LeftButton:
+			self.onLButtonDown((e.buttons() | e.modifiers()), e.pos())
+
+		elif e.button() == Qt.MidButton:
+			self.onMButtonDown((e.buttons() | e.modifiers()), e.pos())
+
+		elif e.button() == Qt.RightButton:
+			self.onRButtonDown((e.buttons() | e.modifiers()), e.pos())

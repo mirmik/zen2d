@@ -8,5 +8,13 @@ class line(interactive_object):
 		self.pnt1 = point(pnt1)
 
 	def draw(self, painter):
-		print(self.pnt0, self.pnt1)
 		painter.draw_line(self.location(self.pnt0), self.location(self.pnt1))
+
+class iline_between(interactive_object):
+	def __init__(self, a, b):
+		super().__init__()
+		self.a = a
+		self.b = b
+
+	def draw(self, painter):
+		painter.draw_line(self.location(point(self.a.location.lin)), self.location(point(self.b.location.lin)))
